@@ -63,10 +63,7 @@ class Post(Base):
         help_text=v,
     )
     author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name="Автор публикации",
-        null=True
+        User, on_delete=models.CASCADE, verbose_name="Автор публикации", null=True
     )
     location = models.ForeignKey(
         Location,
@@ -82,7 +79,9 @@ class Post(Base):
         verbose_name="Категория",
         null=True,
     )
-    image = models.ImageField("Фото", upload_to='birthdays_images', null=True, blank=True)
+    image = models.ImageField(
+        "Фото", upload_to="birthdays_images", null=True, blank=True
+    )
     comment_count = models.IntegerField("Количество комментариев", default=0)
 
     class Meta:
@@ -96,17 +95,11 @@ class Post(Base):
 class Comment(models.Model):
     text = models.TextField("Текст", blank=False, null=False)
     post = models.ForeignKey(
-        Post,
-        on_delete=models.CASCADE,
-        related_name='post',
-        null=True
+        Post, on_delete=models.CASCADE, related_name="post", null=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='author',
-        null=True
+        User, on_delete=models.CASCADE, related_name="author", null=True
     )
 
     class Meta:

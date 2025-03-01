@@ -21,16 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = '''django-insecure-x
-(f*2np$0y$8_r9t*pxa+zvsevwqo18)$u6_@5^$l)6z6&=37q'''
+SECRET_KEY = """django-insecure-x
+(f*2np$0y$8_r9t*pxa+zvsevwqo18)$u6_@5^$l)6z6&=37q"""
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost'
-]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -44,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "blog.apps.BlogConfig",
     "pages.apps.PagesConfig",
-    'django_bootstrap5',
+    "django_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -57,11 +54,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 
-EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
-LOGIN_REDIRECT_URL = 'blog:index'
-LOGIN_URL = 'login'
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+LOGIN_REDIRECT_URL = "blog:index"
+LOGIN_URL = "login"
 ROOT_URLCONF = "blogicum.urls"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
@@ -95,22 +92,21 @@ DATABASES = {
 }
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": '''django.contrib.auth.password_validation.UserAttributeSimilarityValidator''',
+        "NAME": """django.contrib.auth.password_validation.UserAttributeSimilarityValidator""",
     },
     {
-        "NAME": '''django.contrib.auth.password_validation.MinimumLengthValidator''',
+        "NAME": """django.contrib.auth.password_validation.MinimumLengthValidator""",
     },
     {
-        "NAME": '''django.contrib.auth.password_validation.CommonPasswordValidator''',
+        "NAME": """django.contrib.auth.password_validation.CommonPasswordValidator""",
     },
     {
-        "NAME": '''django.contrib.auth.password_validation.NumericPasswordValidator''',
+        "NAME": """django.contrib.auth.password_validation.NumericPasswordValidator""",
     },
 ]
 
@@ -143,4 +139,4 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / "media"

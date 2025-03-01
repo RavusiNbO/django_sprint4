@@ -10,22 +10,21 @@ from .forms import CommentForm, PostForm, ProfileForm
 from django.urls import reverse
 
 
-
-
 def profile(request, name):
     profile = get_object_or_404(m.User, username=name)
     count = m.Comment.objects.filter(author=profile).count()
-    publications = m.Post.objects.select_related("author", "location", "category").filter(author__username=name).order_by('-pub_date')
+    publications = (
+        m.Post.objects.select_related("author", "location", "category")
+        .filter(author__username=name)
+        .order_by("-pub_date")
+    )
     paginator = Paginator(publications, 10)
-    page_num = request.GET.get('page')
+    page_num = request.GET.get("page")
     page_obj = paginator.get_page(page_num)
 
-    context = {
-        'profile' : profile,
-        'page_obj' : page_obj,
-        'count' : count
-    }
-    return render(request, 'blog/profile.html', context)
+    context = {"profile": profile, "page_obj": page_obj, "count": count}
+    return render(request, "blog/profile.html", context)
+
 
 @login_required
 def add_comment(request, id):
@@ -42,65 +41,63 @@ def add_comment(request, id):
         comment.save()
         print(author, post)
 
-        
-        return redirect('blog:post_detail', id)
-    
-    
-    return redirect('blog:post_detail', id)
+        return redirect("blog:post_detail", id)
+
+    return redirect("blog:post_detail", id)
+
 
 @login_required
 def edit_profile(request, username):
     user = get_object_or_404(m.User, username=username)
     if request.user == user:
         form = ProfileForm(request.POST or None, instance=user)
-        context = {'form' : form}
+        context = {"form": form}
         if form.is_valid():
             form.save()
 
-        return render(request, 'blog/user.html', context)
+        return render(request, "blog/user.html", context)
     else:
         raise PermissionDenied
-    
-    
+
+
 @login_required
 def edit_comment(request, id, comment_id):
     comment = get_object_or_404(m.Comment, pk=comment_id)
     if request.user != comment.author:
         raise PermissionDenied
-    
+
     form = CommentForm(
-        request.POST or None,
-        files=request.FILES or None,
-        instance=comment
+        request.POST or None, files=request.FILES or None, instance=comment
     )
     if form.is_valid():
         form.save()
-        redirect_url = reverse('blog:post_detail', args=[id])
+        redirect_url = reverse("blog:post_detail", args=[id])
 
         return redirect(redirect_url)
 
-    context = {'form' : form, 'comment' : comment} 
+    context = {"form": form, "comment": comment}
 
-    return render(request, 'blog/comment.html', context)
+    return render(request, "blog/comment.html", context)
+
 
 @login_required
 def delete_comment(request, id, comment_id):
     comment = get_object_or_404(m.Comment, pk=comment_id)
     if request.user != comment.author:
         raise PermissionDenied
-    
+
     if request.POST:
         post = get_object_or_404(m.Post, pk=id)
         post.comment_count -= 1
         post.save()
         comment.delete()
 
-        return redirect('blog:post_detail', id)
+        return redirect("blog:post_detail", id)
 
-    context = {'comment' : comment} 
+    context = {"comment": comment}
 
+    return render(request, "blog/comment.html", context)
 
-    return render(request, 'blog/comment.html', context)
 
 @login_required
 def add_post(request):
@@ -111,51 +108,46 @@ def add_post(request):
         post = form.save(commit=False)
         post.author = user
         post.save()
-        redirect_url = reverse('blog:profile', args={post.author.username})
+        redirect_url = reverse("blog:profile", args={post.author.username})
         return redirect(redirect_url)
 
-    context = {'form' : form}
-    return render(request, 'blog/create.html', context)
+    context = {"form": form}
+    return render(request, "blog/create.html", context)
 
 
 def edit_post(request, id):
     post = get_object_or_404(m.Post, pk=id)
     users = m.User.objects.all()
     if request.user not in users:
-        return redirect('blog:post_detail', id)
+        return redirect("blog:post_detail", id)
     if request.user != post.author:
         raise PermissionDenied
-    
-    form = PostForm(
-        request.POST or None,
-        instance=post
-    )
 
+    form = PostForm(request.POST or None, instance=post)
 
     if form.is_valid():
         form.save()
-        return redirect('blog:post_detail', id)
+        return redirect("blog:post_detail", id)
 
-    context = {'form' : form}
+    context = {"form": form}
 
-    return render(request, 'blog/create.html', context)
+    return render(request, "blog/create.html", context)
+
 
 @login_required
 def delete_post(request, id):
     post = get_object_or_404(m.Post, pk=id)
     if request.user != post.author:
         raise PermissionDenied
-    form = PostForm(
-        instance=post
-    )
+    form = PostForm(instance=post)
 
-    context={'form' : form}
+    context = {"form": form}
 
     if request.POST:
         post.delete()
 
+    return render(request, "blog/create.html", context)
 
-    return render(request, 'blog/create.html', context)
 
 # class PostCreateView(CreateView):
 #     form = PostForm
@@ -191,37 +183,40 @@ def delete_post(request, id):
 
 
 def index(request):
-    paginator = Paginator(m.Post.objects.select_related("author", "location", "category")
+    paginator = Paginator(
+        m.Post.objects.select_related("author", "location", "category")
         .order_by("-pub_date")
         .filter(
             Q(pub_date__lte=timezone.now())
             & Q(is_published=True)
             & Q(category__is_published=True)
-        ), 10)
-    
-    page_number = request.GET.get('page')
-    # Получаем запрошенную страницу пагинатора. 
-    # Если параметра page нет в запросе или его значение не приводится к числу,
-    # вернётся первая страница.
-    page_obj = paginator.get_page(page_number)
-    c = {'page_obj' : page_obj}
-    t = "blog/index.html"
-    
-    return render(request, t, c)
+        ),
+        10,
+    )
 
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    c = {"page_obj": page_obj}
+    t = "blog/index.html"
+
+    return render(request, t, c)
 
 
 def category_posts(request, category_slug):
     category = get_object_or_404(m.Category, slug=category_slug)
     if category.is_published is False:
         raise Http404
-    posts = m.Post.objects.select_related("location").filter(
+    posts = (
+        m.Post.objects.select_related("location")
+        .filter(
             Q(category__slug=category_slug)
             & Q(is_published=True)
             & Q(pub_date__lte=timezone.now())
-        ).order_by('-pub_date')
+        )
+        .order_by("-pub_date")
+    )
     paginator = Paginator(posts, 10)
-    page_num = request.GET.get('page')
+    page_num = request.GET.get("page")
     page_obj = paginator.get_page(page_num)
     context = {
         "category": category,
@@ -244,16 +239,16 @@ def post_detail(request, pk):
         or post.category.is_published is False
     ):
         raise Http404
-    
+
     form = CommentForm(request.POST or None)
-    
+
     # if form.is_valid():
     #     form.save(commit=False)
     #     form.post = post
     #     form.author = request.user
     #     form.save()
     comments = m.Comment.objects.filter(post=post.pk)
-    context = {"post": post, 'form' : form, 'comments' : comments}
+    context = {"post": post, "form": form, "comments": comments}
     template = "blog/detail.html"
 
     return render(request, template, context)
