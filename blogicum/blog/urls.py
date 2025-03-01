@@ -4,6 +4,8 @@ from . import views
 
 app_name = "blog"
 n = "category_posts"
+
+
 urlpatterns = [
     path("", views.index, name="index"),
     path("posts/<int:pk>/", views.post_detail, name="post_detail"),

@@ -5,7 +5,7 @@
     Редактирование комментария
   {% else %}
     Удаление комментария
-  {% endif %}
+  {% endif %} 
 {% endblock %}
 {% block content %}
   {% if user.is_authenticated %}
@@ -21,7 +21,7 @@
         <div class="card-body">
           <form method="post"
             {% if '/edit_comment/' in request.path %}
-              action="{% url 'blog:edit_comment' comment.post comment.id %}"
+              action="{% url 'blog:edit_comment' comment.post.id comment.id %}"
             {% endif %}>
             {% csrf_token %}
             {% if not '/delete_comment/' in request.path %}

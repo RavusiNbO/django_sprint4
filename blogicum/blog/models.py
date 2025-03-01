@@ -82,7 +82,8 @@ class Post(Base):
         verbose_name="Категория",
         null=True,
     )
-    image = models.ImageField("Фото", upload_to='birthdays_images', null=True)
+    image = models.ImageField("Фото", upload_to='birthdays_images', null=True, blank=True)
+    comment_count = models.IntegerField("Количество комментариев", default=0)
 
     class Meta:
         verbose_name = "публикация"

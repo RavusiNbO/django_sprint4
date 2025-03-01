@@ -21,9 +21,9 @@ from django.urls import path, include, reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.forms import UserCreationForm
 
-handler404 = "blog.views.page_not_found"
-handler403 = 'blog.views.forbidden'
-handler500 = 'blog.views.server_error'
+handler404 = "pages.views.page_not_found"
+handler403 = 'pages.views.forbidden'
+handler500 = 'pages.views.server_error'
 
 urlpatterns = [
     path("admin/", admin.site.urls),

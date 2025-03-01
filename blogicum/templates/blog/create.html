@@ -28,14 +28,14 @@
             {% bootstrap_form form %}
           {% else %}
             <article>
-              {% if form.instance.image %}
-                <a href="{{ form.instance.image.url }}" target="_blank">
-                  <img class="border-3 rounded img-fluid img-thumbnail mb-2" src="{{ form.instance.image.url }}">
+              {% if comment.image %}
+                <a href="{{ comment.image.url }}" target="_blank">
+                  <img class="border-3 rounded img-fluid img-thumbnail mb-2" src="{{ comment.image.url }}">
                 </a>
               {% endif %}
-              <p>{{ form.instance.pub_date|date:"d E Y" }} | {% if form.instance.location and form.instance.location.is_published %}{{ form.instance.location.name }}{% else %}Планета Земля{% endif %}<br>
-              <h3>{{ form.instance.title }}</h3>
-              <p>{{ form.instance.text|linebreaksbr }}</p>
+              <p>{{ comment.pub_date|date:"d E Y" }} | {% if comment.location and comment.location.is_published %}{{ comment.location.name }}{% else %}Планета Земля{% endif %}<br>
+              <h3>{{ comment.title }}</h3>
+              <p>{{ comment.text|linebreaksbr }}</p>
             </article>
           {% endif %}
           {% bootstrap_button button_type="submit" content="Отправить" %}
