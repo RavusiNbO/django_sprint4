@@ -25,5 +25,9 @@ urlpatterns = [
     ),
     path("category/<slug:category_slug>/", views.category_posts, name=n),
     path("profile/<slug:name>/", views.profile, name="profile"),
-    path("profile/<slug:username>/edit/", views.edit_profile, name="edit_profile"),
+    path(
+        "profile/<slug:username>/edit/",
+        views.edit_profile,
+        name="edit_profile"
+    ),
 ]

@@ -63,7 +63,10 @@ class Post(Base):
         help_text=v,
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name="Автор публикации", null=True
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Автор публикации",
+        null=True
     )
     location = models.ForeignKey(
         Location,
