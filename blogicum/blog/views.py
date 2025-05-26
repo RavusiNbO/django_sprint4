@@ -86,17 +86,15 @@ def delete_comment(request, id, comment_id):
     if request.user != comment.author:
         raise PermissionDenied
 
-    if request.POST:
-        post = get_object_or_404(m.Post, pk=id)
+    post = get_object_or_404(m.Post, pk=id)
+    if request.method == 'POST':
         post.comment_count -= 1
         post.save()
         comment.delete()
+        return redirect('blog:post_detail', id)
 
-        return redirect("blog:post_detail", id)
-
-    context = {"comment": comment}
-
-    return render(request, "blog/comment.html", context)
+    context = {'comment': comment}
+    return render(request, 'blog/comment.html', context)
 
 
 @login_required
@@ -117,21 +115,19 @@ def add_post(request):
 
 def edit_post(request, id):
     post = get_object_or_404(m.Post, pk=id)
-    users = m.User.objects.all()
-    if request.user not in users:
-        return redirect("blog:post_detail", id)
+    if not request.user.is_authenticated:
+        return redirect('blog:post_detail', id)
     if request.user != post.author:
-        raise PermissionDenied
+        return redirect('blog:post_detail', id)
 
-    form = PostForm(request.POST or None, instance=post)
+    form = PostForm(request.POST or None, files=request.FILES or None, instance=post)
 
     if form.is_valid():
         form.save()
-        return redirect("blog:post_detail", id)
+        return redirect('blog:post_detail', id)
 
-    context = {"form": form}
-
-    return render(request, "blog/create.html", context)
+    context = {'form': form}
+    return render(request, 'blog/create.html', context)
 
 
 @login_required
@@ -139,14 +135,13 @@ def delete_post(request, id):
     post = get_object_or_404(m.Post, pk=id)
     if request.user != post.author:
         raise PermissionDenied
-    form = PostForm(instance=post)
 
-    context = {"form": form}
-
-    if request.POST:
+    if request.method == 'POST':
         post.delete()
+        return redirect('blog:index')
 
-    return render(request, "blog/create.html", context)
+    context = {'post': post}
+    return render(request, 'blog/create.html', context)
 
 
 # class PostCreateView(CreateView):
@@ -231,25 +226,18 @@ def post_detail(request, pk):
     auth = "author"
     loc = "location"
     cat = "category"
-    post = m.Post.objects
-    post = post.select_related(auth, loc, cat).get(pk=pk)
-    if (
-        post.pub_date > timezone.now()
-        or post.is_published is False
-        or post.category.is_published is False
-    ):
+    post = m.Post.objects.select_related(auth, loc, cat).get(pk=pk)
+
+    if not post.is_published:
+        if not request.user.is_authenticated or request.user != post.author:
+            raise Http404
+    elif post.pub_date > timezone.now() or post.category.is_published is False:
         raise Http404
 
     form = CommentForm(request.POST or None)
-
-    # if form.is_valid():
-    #     form.save(commit=False)
-    #     form.post = post
-    #     form.author = request.user
-    #     form.save()
     comments = m.Comment.objects.filter(post=post.pk)
-    context = {"post": post, "form": form, "comments": comments}
-    template = "blog/detail.html"
+    context = {'post': post, 'form': form, 'comments': comments}
+    template = 'blog/detail.html'
 
     return render(request, template, context)
 

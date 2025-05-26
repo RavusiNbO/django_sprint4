@@ -18,8 +18,11 @@ class Base(models.Model):
         default=True,
         help_text="Снимите галочку, чтобы скрыть публикацию.",
     )
-    d = "Добавлено"
-    created_at = models.DateTimeField(d, blank=False, auto_now_add=True)
+    created_at = models.DateTimeField(
+        "Добавлено",
+        blank=False,
+        auto_now_add=True
+    )
 
     class Meta:
         abstract = True
